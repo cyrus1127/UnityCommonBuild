@@ -27,7 +27,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Advertisements;
 
-public class InitializeAdsScript : MonoBehaviour , IUnityAdsListener
+public class RewardAdsHandler : MonoBehaviour , IUnityAdsListener
 {
     string gameId_AOS = "3872649";
     string gameId_IOS = "3872648";

@@ -24,12 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AppDataUtils : MonoBehaviour
 {
-    private static AppDataUtils _instance = null;
 
+    public enum loginType {
+        login_register,
+        login_registered,
+        login_google,
+        login_facebook,
+        login_apple
+    };
+
+    public InputField account_Id;
+    public InputField account_pwd;
+
+
+    private static AppDataUtils _instance = null;
     public static AppDataUtils instance
     {
         get { return _instance ?? (_instance = AppDataUtils.Create()); }
@@ -64,7 +78,8 @@ public class AppDataUtils : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        DontDestroyOnLoad(this);
+        
     }
 
     // Update is called once per frame
@@ -105,5 +120,76 @@ public class AppDataUtils : MonoBehaviour
         return false;
     }
 
+
+    public void LoginNormal(){LoginWith(loginType.login_registered); }
+    public void LoginRegister() { LoginWith(loginType.login_register); }
+    public void LoginGoogle() { LoginWith(loginType.login_google); }
+    public void LoginFacebook() { LoginWith(loginType.login_facebook); }
+    public void LoginApple() { LoginWith(loginType.login_apple); }
+
+    private void LoginWith(loginType type)
+    {
+        switch (type)
+        {
+            case loginType.login_register:
+                //Do Registeration flow
+                if (account_Id.text.Length == 0 || account_pwd.text.Length == 0)
+                {
+                    Debug.Log("Account ID/Password can not be empty !");
+                }
+                else {
+                    //Do auto fill and open another dialog for next step
+                    DoLoginProcess();
+                }
+                break;
+            case loginType.login_registered:
+                //Do normal Login flow
+                if (account_Id.text.Length == 0 || account_pwd.text.Length == 0)
+                {
+                    Debug.Log("Account ID/Password can not be empty !");
+                }
+                else {
+                    //Do check server responce
+                    StartCoroutine(DoLoginProcess());
+                }
+                break;
+            case loginType.login_google:
+                //Call google Login flow
+                break;
+            case loginType.login_facebook:
+                //Call facebook Login flow
+                break;
+            case loginType.login_apple:
+                //Call apple Login flow
+                break;
+        }
+
+    }
+
     
+    IEnumerator DoLoginProcess()
+    {
+        //Do show Loading
+        if(true){
+            //coding here.....
+        }
+
+        //Cyrus : do simulate real connection
+        yield return new WaitForSeconds(0.5f);
+
+        LoadDashboardAfterloginSuccess();
+    }
+
+
+    //Scene
+    private void LoadDashboardAfterloginSuccess()
+    {
+        GetComponent<SceneHandler>().SetToScene("Scene_Main");
+    }
+
+    public void LoadShop()
+    {
+        GetComponent<SceneHandler>().SetToScene("Scene_InAppPurchase");
+    }
+
 }
