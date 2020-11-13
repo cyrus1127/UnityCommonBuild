@@ -38,7 +38,9 @@ public class SceneHandler : MonoBehaviour
     {
         if (asyncOperation_IAPView != null && asyncOperation_IAPView.isDone)
         {
-            SceneManager.GetSceneByName(scene_name_to);
+            Debug.Log(scene_name_to + " ready to open");
+            //SceneManager.GetSceneByName(scene_name_to);
+            StartCoroutine(PreLoadScenes());
         }
         else
         {
@@ -49,7 +51,7 @@ public class SceneHandler : MonoBehaviour
 
     IEnumerator PreLoadScenes()
     {
-        asyncOperation_IAPView = SceneManager.LoadSceneAsync(scene_name_to);
+        asyncOperation_IAPView = SceneManager.LoadSceneAsync(scene_load);
 
         while (!asyncOperation_IAPView.isDone)
         {
@@ -58,6 +60,7 @@ public class SceneHandler : MonoBehaviour
 
         if (asyncOperation_IAPView.isDone)
         {
+            scene_name_from = SceneManager.GetActiveScene().name;
             Debug.Log("Scene load done");
         }
     }

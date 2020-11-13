@@ -25,6 +25,7 @@ public class SceneLoadingHandler : MonoBehaviour
     [System.Obsolete]
     void Start()
     {
+        Debug.Log("scence: SceneLoadingHandler ! Start!" );
         if (mainHandler != null)
         {
             targetSceneName = mainHandler.scene_name_to;

@@ -29,6 +29,7 @@
 #if UNITY_PURCHASING || UNITY_UNIFIED_IAP
 
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Purchasing;
@@ -41,6 +42,7 @@ public class IAPProductUI_Cust : MonoBehaviour
     public Text descriptionText;
     public Text priceText;
     public Text statusText;
+    public Image imageView;
 
     private string m_ProductID;
     private Action<string> m_PurchaseCallback;
@@ -59,6 +61,21 @@ public class IAPProductUI_Cust : MonoBehaviour
         m_PurchaseCallback = purchaseCallback;
 
         statusText.text = p.availableToPurchase ? "Available" : "Unavailable";
+
+        //set Image
+        //string spriteName = p.definition.;
+        if (m_ProductID.Contains("coins_package_option_a")) {
+            string[] parts =  m_ProductID.Split("_".ToCharArray());
+            string imageIndex = parts[parts.Length - 1]; //get the last digit
+            imageIndex = imageIndex.Substring(1);
+            imageView.sprite = Resources.Load<Sprite>("IAP_Shop/" + "IAP_C0"+ imageIndex);
+        }else if (m_ProductID.Contains("sub"))
+        {//so ads
+            imageView.sprite = Resources.Load<Sprite>("IAP_Shop/" + "IAP_C00");
+        }
+        
+
+
     }
 
     public void SetPendingTime(int secondsRemaining)
@@ -71,6 +88,10 @@ public class IAPProductUI_Cust : MonoBehaviour
         if (m_PurchaseCallback != null && !string.IsNullOrEmpty(m_ProductID))
         {
             m_PurchaseCallback(m_ProductID);
+        }
+        else {
+            
+           Debug.Log("PurchaseButtonClick : m_PurchaseCallback is Null");
         }
     }
 

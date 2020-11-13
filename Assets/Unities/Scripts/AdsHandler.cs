@@ -26,7 +26,9 @@ public class AdsHandler : MonoBehaviour
         }
         
         Advertisement.Initialize(target_id, testMode);
+        Advertisement.Banner.SetPosition(onShowPostion);
         Advertisement.Banner.Load();
+        
         StartCoroutine(LoadBannerAd());
     }
 
@@ -43,7 +45,6 @@ public class AdsHandler : MonoBehaviour
             yield return new WaitForSeconds(bannerRefreshTime);
         }
 
-        Advertisement.Banner.SetPosition(onShowPostion);
         Advertisement.Banner.Show(banner_placement);
     }
 }

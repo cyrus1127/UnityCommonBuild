@@ -25,19 +25,19 @@
 // THE SOFTWARE.
 
 
-    #if UNITY_PURCHASING || UNITY_UNIFIED_IAP
+#if UNITY_PURCHASING || UNITY_UNIFIED_IAP
 
 #if UNITY_ANDROID || UNITY_IPHONE || UNITY_STANDALONE_OSX || UNITY_TVOS
 // You must obfuscate your secrets using Window > Unity IAP > Receipt Validation Obfuscator
 // before receipt validation will compile in this sample.
-//#define RECEIPT_VALIDATION
+#define RECEIPT_VALIDATION
 #endif
 
-//#define DELAY_CONFIRMATION // Returns PurchaseProcessingResult.Pending from ProcessPurchase, then calls ConfirmPendingPurchase after a delay
-//#define USE_PAYOUTS // Enables use of PayoutDefinitions to specify what the player should receive when a product is purchased
-//#define INTERCEPT_PROMOTIONAL_PURCHASES // Enables intercepting promotional purchases that come directly from the Apple App Store
-//#define SUBSCRIPTION_MANAGER //Enables subscription product manager for AppleStore and GooglePlay store
-//#define AGGRESSIVE_INTERRUPT_RECOVERY_GOOGLEPLAY // Enables also using AIDL getPurchaseHistory to recover from purchase interruptions, assuming developer is deduplicating to protect against "duplicate on cancel" flow
+#define DELAY_CONFIRMATION // Returns PurchaseProcessingResult.Pending from ProcessPurchase, then calls ConfirmPendingPurchase after a delay
+#define USE_PAYOUTS // Enables use of PayoutDefinitions to specify what the player should receive when a product is purchased
+#define INTERCEPT_PROMOTIONAL_PURCHASES // Enables intercepting promotional purchases that come directly from the Apple App Store
+#define SUBSCRIPTION_MANAGER //Enables subscription product manager for AppleStore and GooglePlay store
+#define AGGRESSIVE_INTERRUPT_RECOVERY_GOOGLEPLAY // Enables also using AIDL getPurchaseHistory to recover from purchase interruptions, assuming developer is deduplicating to protect against "duplicate on cancel" flow
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -98,7 +98,7 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
         m_GooglePlayStoreExtensions = extensions.GetExtension<IGooglePlayStoreExtensions>();
         // Sample code for expose product sku details for google play store
         // Key is product Id (Sku), value is the skuDetails json string
-        //Dictionary<string, string> google_play_store_product_SKUDetails_json = m_GooglePlayStoreExtensions.GetProductJSONDictionary();
+        Dictionary<string, string> google_play_store_product_SKUDetails_json = m_GooglePlayStoreExtensions.GetProductJSONDictionary();
         // Sample code for manually finish a transaction (consume a product on GooglePlay store)
         //m_GooglePlayStoreExtensions.FinishAdditionalTransaction(productId, transactionId);
         m_GooglePlayStoreExtensions.SetLogLevel(0); // 0 == debug, info, warning, error. 1 == warning, error only.
@@ -293,6 +293,7 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
         //     this purchase. Use to transactionally save purchases to a cloud
         //     game service.
 #if DELAY_CONFIRMATION
+        Debug.Log("ConfirmPendingPurchaseAfterDelay");
         StartCoroutine(ConfirmPendingPurchaseAfterDelay(e.purchasedProduct));
         return PurchaseProcessingResult.Pending;
 #else
@@ -374,7 +375,7 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
         // The FakeStore supports: no-ui (always succeeding), basic ui (purchase pass/fail), and
         // developer ui (initialization, purchase, failure code setting). These correspond to
         // the FakeStoreUIMode Enum values passed into StandardPurchasingModule.useFakeStoreUIMode.
-        module.useFakeStoreUIMode = FakeStoreUIMode.StandardUser;
+        //module.useFakeStoreUIMode = FakeStoreUIMode.Default;
 
         var builder = ConfigurationBuilder.Instance(module);
 
@@ -428,7 +429,34 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
         // So on the Mac App store our products have different identifiers,
         // and we tell Unity IAP this by using the IDs class.
 
-        builder.AddProduct("100.gold.coins", ProductType.Consumable, new IDs
+
+        if (true)
+        {
+            builder.AddProduct("coins_package_option_a1", ProductType.Consumable, new IDs
+            {
+                //{"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
+                //{"100.gold.coins", AmazonApps.Name},
+                //{"100.gold.coins", AppleAppStore.Name}
+                {"coins_package_option_a1",GooglePlay.Name}
+            }
+                , new List<PayoutDefinition> {
+                new PayoutDefinition(PayoutType.Item, "", 1, "item_id:coins_package_option_a1"),
+                new PayoutDefinition(PayoutType.Currency, "Coin", 10000)
+                }
+            );
+
+            builder.AddProduct("sub1", ProductType.Subscription, new IDs
+            {
+            }
+                , new List<PayoutDefinition> {
+                new PayoutDefinition(PayoutType.Item, "", 1, "item_id:AdsRewards"),
+                new PayoutDefinition(PayoutType.Currency, "Coin", 100)
+                }
+            );
+        }
+        else
+        {
+            builder.AddProduct("100.gold.coins", ProductType.Consumable, new IDs
             {
                 {"com.unity3d.unityiap.unityiapdemo.100goldcoins.7", MacAppStore.Name},
                 {"100.gold.coins", AmazonApps.Name},
@@ -442,7 +470,7 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
 #endif //USE_PAYOUTS
                 );
 
-        builder.AddProduct("500.gold.coins", ProductType.Consumable, new IDs
+            builder.AddProduct("500.gold.coins", ProductType.Consumable, new IDs
             {
                 {"com.unity3d.unityiap.unityiapdemo.500goldcoins.7", MacAppStore.Name},
                 {"500.gold.coins", AmazonApps.Name},
@@ -452,9 +480,9 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
 #endif //USE_PAYOUTS
         );
 
-        builder.AddProduct("300.gold.coins", ProductType.Consumable, new IDs
-        {
-        }
+            builder.AddProduct("300.gold.coins", ProductType.Consumable, new IDs
+            {
+            }
 #if USE_PAYOUTS
         , new List<PayoutDefinition> {
             new PayoutDefinition(PayoutType.Item, "", 1, "item_id:76543"),
@@ -463,13 +491,16 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
 #endif //USE_PAYOUTS
         );
 
-        builder.AddProduct("sub1", ProductType.Subscription, new IDs
-        {
-        });
+            builder.AddProduct("sub1", ProductType.Subscription, new IDs
+            {
+            });
 
-        builder.AddProduct("sub2", ProductType.Subscription, new IDs
-        {
-        });
+            builder.AddProduct("sub2", ProductType.Subscription, new IDs
+            {
+            });
+        }
+
+        
 
 
         // Write Amazon's JSON description of our products to storage when using Amazon's local sandbox.
@@ -478,7 +509,7 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
 
         // This enables simulated purchase success for Samsung IAP.
         // You would remove this, or set to SamsungAppsMode.Production, before building your release package.
-        builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
+        //builder.Configure<ISamsungAppsConfiguration>().SetMode(SamsungAppsMode.AlwaysSucceed);
         // This records whether we are using Samsung IAP. Currently ISamsungAppsExtensions.RestoreTransactions
         // displays a blocking Android Activity, so:
         // A) Unity IAP does not automatically restore purchases on Samsung Galaxy Apps
@@ -564,6 +595,7 @@ public class IAP_Cust : MonoBehaviour, IStoreListener
 
     public void PurchaseButtonClick(string productID)
     {
+        Debug.Log("PurchaseButtonClick");
         if (m_PurchaseInProgress == true)
         {
             Debug.Log("Please wait, purchase in progress");

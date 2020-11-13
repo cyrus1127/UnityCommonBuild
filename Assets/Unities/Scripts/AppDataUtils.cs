@@ -184,12 +184,18 @@ public class AppDataUtils : MonoBehaviour
     //Scene
     private void LoadDashboardAfterloginSuccess()
     {
-        GetComponent<SceneHandler>().SetToScene("Scene_Main");
+        LoadDashboard();
     }
 
     public void LoadShop()
     {
+        Debug.Log("function::LoadShop called");
         GetComponent<SceneHandler>().SetToScene("Scene_InAppPurchase");
+    }
+    public void LoadDashboard()
+    {
+        Debug.Log("function::LoadShop called");
+        GetComponent<SceneHandler>().SetToScene("Scene_Main");
     }
 
 }

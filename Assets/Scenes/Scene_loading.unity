@@ -720,7 +720,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameFromSceneName: 
   targetSceneName: 
-  progressBar: {fileID: 0}
+  progressBar: {fileID: 1321711163}
 --- !u!4 &1743369421
 Transform:
   m_ObjectHideFlags: 0
