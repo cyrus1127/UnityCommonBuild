@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "308178817292",
+    "firebase_url": "https://commonbuildformobilegame.firebaseio.com",
+    "project_id": "commonbuildformobilegame",
+    "storage_bucket": "commonbuildformobilegame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308178817292:android:db1d6d4b235ae8f9127929",
+        "android_client_info": {
+          "package_name": "com.sluggishchildcreativegroup.CommonBuildForMobileGame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "308178817292-m22tiau2co16ljkp9u801lcpfvijam2i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sluggishchildcreativegroup.CommonBuildForMobileGame",
+            "certificate_hash": "d450c96fe33592e9a24bb5654215ec055df962a6"
+          }
+        },
+        {
+          "client_id": "308178817292-td5m1hqvqqlckcb5ap97k8frsvf8dgfv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAs2bL9fsW3td8t5PiWnw6aFQ-34lVJQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "308178817292-td5m1hqvqqlckcb5ap97k8frsvf8dgfv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

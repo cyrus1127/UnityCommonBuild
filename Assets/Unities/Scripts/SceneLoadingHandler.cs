@@ -18,7 +18,11 @@ public class SceneLoadingHandler : MonoBehaviour
 
     private void Awake()
     {
-        mainHandler = GameObject.Find("Data").GetComponent<SceneHandler>();
+        GameObject targetData = GameObject.Find("Data");
+        if (targetData)
+        {
+            mainHandler = targetData.GetComponent<SceneHandler>();
+        }
     }
 
     // Start is called before the first frame update
@@ -44,6 +48,13 @@ public class SceneLoadingHandler : MonoBehaviour
             Debug.Log("No Target Scene");
         }
         else {
+
+            //The App is start
+            if (targetSceneName == "Scene_Login")
+            {
+                Debug.Log("App is start");
+            }
+
             if (async != null && async.isDone)
             {
                 SceneManager.GetSceneByName(targetSceneName);
