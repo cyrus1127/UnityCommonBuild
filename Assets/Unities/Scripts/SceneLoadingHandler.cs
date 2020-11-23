@@ -15,13 +15,20 @@ public class SceneLoadingHandler : MonoBehaviour
     private float progressBar_HolderSize;
     AsyncOperation async;
 
+    public bool isAppLaunchPreLoadScene = false;
+
+    private bool shouldStartPreLoadScenes = false;
 
     private void Awake()
     {
         GameObject targetData = GameObject.Find("Data");
-        if (targetData)
+        if (targetData && !isAppLaunchPreLoadScene )
         {
             mainHandler = targetData.GetComponent<SceneHandler>();
+            Debug.Log("targetData GameObject Found! App Already Launched ");
+        }
+        else {
+            Debug.Log("targetData GameObject Not Found! is Launch App stage");
         }
     }
 
@@ -50,19 +57,15 @@ public class SceneLoadingHandler : MonoBehaviour
         else {
 
             //The App is start
-            if (targetSceneName == "Scene_Login")
+            if (targetSceneName == "Scene_login")
             {
-                Debug.Log("App is start");
+                Debug.Log("App is starting -- waiting the FireBase Done");
+                AppDataUtils.instance.SetAppLaunchCompletionBlock(CallForContinueLogin);
+                StopCoroutine("PreLoadScenes");
             }
-
-            if (async != null && async.isDone)
-            {
-                SceneManager.GetSceneByName(targetSceneName);
-            }
-            else
-            {
-                Debug.Log(async + " not ready to open");
-                StartCoroutine(PreLoadScenes());
+            else {
+                Debug.Log("App is started --> target Scene Name ? " + targetSceneName);
+                StartLoadScene();
             }
         }
     }
@@ -77,7 +80,7 @@ public class SceneLoadingHandler : MonoBehaviour
             if (true)
             {//style 1
                 Debug.Log( "scence is loading !  -> progress : " + prec );
-                progressBar.transform.localScale.Set(prec, 1, 1);
+                progressBar.rectTransform.localScale = new Vector3(prec, 1f, 1f);
             }
             else
             {//style 2
@@ -85,25 +88,78 @@ public class SceneLoadingHandler : MonoBehaviour
 
             }
         }
+
+        if (shouldStartPreLoadScenes) {
+            shouldStartPreLoadScenes = false;
+            StartCoroutine("PreLoadScenes");
+        }
+    }
+
+
+    /// --------- Scene Loading handling functions ---------- ///
+
+    [System.Obsolete]
+    private void StartLoadScene()
+    {
+        Debug.Log("SceneLoadingHandler::" + "StartLoadScene"  + " called" );
+        if (async != null)
+        {
+            SceneManager.GetSceneByName(targetSceneName);
+        }
+        else
+        {
+            Debug.Log("async not ready to open");
+            StartCoroutine("PreLoadScenes");
+        }
+    }
+
+    [System.Obsolete]
+    public void CallForContinueLogin()
+    {
+        //Start Load
+        async = null;
+        shouldStartPreLoadScenes = true;
+        StartLoadScene();
     }
 
     [System.Obsolete]
     IEnumerator PreLoadScenes()
     {
-
-        async = SceneManager.LoadSceneAsync(targetSceneName);
-
-        while (!async.isDone)
+        if (async == null)
         {
+            Debug.Log("PreLoadScenes called ");
+            async = SceneManager.LoadSceneAsync(targetSceneName);
             yield return null;
         }
+        else
+        {
 
-        if (async.isDone && cameFromSceneName != null) {
-            if (!SceneManager.UnloadScene(cameFromSceneName))
+            //while (async.isDone)
+            //{
+            //    print("async is load done");
+            //    if (cameFromSceneName != null)
+            //    {
+            //        if (!SceneManager.UnloadScene(cameFromSceneName))
+            //        {
+            //            print("Scene unload failed");
+            //        }
+            //    }
+            //    yield return null;
+            //}
+
+            //do in next frame
+            while (!async.isDone)
             {
-                Debug.LogWarning("Scene unload failed");
+                print("async is not load done");
+                yield return null;
             }
         }
     }
 
+
+    IEnumerator testCorouter()
+    {
+        print("testCorouter");
+        yield return null;
+    }
 }

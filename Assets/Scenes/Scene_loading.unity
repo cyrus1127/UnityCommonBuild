@@ -719,8 +719,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameFromSceneName: 
-  targetSceneName: 
+  targetSceneName: Scene_login
   progressBar: {fileID: 1321711163}
+  isAppLaunchPreLoadScene: 0
 --- !u!4 &1743369421
 Transform:
   m_ObjectHideFlags: 0

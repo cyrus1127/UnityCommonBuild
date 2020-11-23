@@ -391,8 +391,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
         m_MethodName: LoginNormal
         m_Mode: 1
         m_Arguments:
@@ -1416,8 +1416,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
         m_MethodName: LoginRegister
         m_Mode: 1
         m_Arguments:
@@ -1923,6 +1923,74 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 643041286}
   m_CullTransparentMesh: 0
+--- !u!1 &752959112
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 752959114}
+  - component: {fileID: 752959113}
+  - component: {fileID: 752959115}
+  m_Layer: 0
+  m_Name: MainObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &752959113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752959112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5719681219f314091a31efa88774f9d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  account_Id: {fileID: 136687355}
+  account_pwd: {fileID: 454354837}
+  account_LoginRequest_panel: {fileID: 8033036}
+  account_LoginAlready_panel: {fileID: 552362497}
+  account_LoginError_panel: {fileID: 1005388185}
+  account_curID_text: {fileID: 640005757}
+  account_curType_text: {fileID: 2111193211}
+  txt_Contents: {fileID: 1245564584}
+  googleIdToken: 
+  googleAccessToken: 
+--- !u!4 &752959114
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752959112}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 640, y: 360.086, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &752959115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752959112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad23e63bfb06a4657a8fbcc5d668487a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusText: {fileID: 0}
+  webClientId: 308178817292-td5m1hqvqqlckcb5ap97k8frsvf8dgfv.apps.googleusercontent.com
 --- !u!1 &777412460
 GameObject:
   m_ObjectHideFlags: 0
@@ -2160,17 +2228,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 788169150}
   m_CullTransparentMesh: 0
---- !u!114 &800943672 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-  m_PrefabInstance: {fileID: 1459705278}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac24c4c10522943c99efe365b7621e63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &816560155
 GameObject:
   m_ObjectHideFlags: 0
@@ -2489,8 +2546,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
         m_MethodName: LoginGuest
         m_Mode: 1
         m_Arguments:
@@ -2700,8 +2757,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
         m_MethodName: LoginFacebook
         m_Mode: 1
         m_Arguments:
@@ -3225,8 +3282,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
         m_MethodName: DoLogout
         m_Mode: 1
         m_Arguments:
@@ -3275,95 +3332,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1442509152}
   m_CullTransparentMesh: 0
---- !u!1001 &1459705278
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_Id
-      value: 
-      objectReference: {fileID: 136687355}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_pwd
-      value: 
-      objectReference: {fileID: 454354837}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_LoginAlready_panel
-      value: 
-      objectReference: {fileID: 552362497}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_LoginRequest_panel
-      value: 
-      objectReference: {fileID: 8033036}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_curID_text
-      value: 
-      objectReference: {fileID: 640005757}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_curType_text
-      value: 
-      objectReference: {fileID: 2111193211}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: account_LoginError_panel
-      value: 
-      objectReference: {fileID: 1005388185}
-    - target: {fileID: 2224965079439780042, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: txt_Contents
-      value: 
-      objectReference: {fileID: 1245564584}
-    - target: {fileID: 6386110487068064188, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_Name
-      value: Data
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 520
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 292.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8806082567560565167, guid: d96852de3a675433aa0325b3e925943b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d96852de3a675433aa0325b3e925943b, type: 3}
 --- !u!1 &1523701709
 GameObject:
   m_ObjectHideFlags: 0
@@ -3521,8 +3489,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
         m_MethodName: LoginGoogle
         m_Mode: 1
         m_Arguments:
@@ -3807,9 +3775,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 800943672}
-        m_TargetAssemblyTypeName: AppDataUtils, Assembly-CSharp
-        m_MethodName: LoginNormal
+      - m_Target: {fileID: 752959113}
+        m_TargetAssemblyTypeName: LoginViewController, Assembly-CSharp
+        m_MethodName: DoLoginProcess
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

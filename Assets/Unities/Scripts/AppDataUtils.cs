@@ -26,50 +26,43 @@
 
 using System;
 using System.Collections;
-using System.Threading.Tasks;
 using Firebase.Auth;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class AppDataUtils : MonoBehaviour
 {
 
-    public enum loginType {
-        login_registered,
-        login_register,
-        login_google,
-        login_facebook,
-        login_apple,
-        login_guest
-    };
-
-    public InputField account_Id;
-    public InputField account_pwd;
-    public GameObject account_LoginRequest_panel;
-    public GameObject account_LoginAlready_panel;
-    public GameObject account_LoginError_panel;
-    public Text account_curID_text;
-    public Text account_curType_text;
-    public Text txt_Contents;
-
-    private bool needToShowErrorMsg;
+    public delegate void FirebaseReadyDelegate();
+    public FirebaseReadyDelegate methodHolder;
 
     ///Login
-    private loginType curSelectedType;
-    private loginType latestSelectedType;
+    private string account_Id;
+
     /// Login - Firebase
-    private Firebase.Auth.FirebaseAuth auth;
+    private static Firebase.Auth.FirebaseAuth auth;
     private static Firebase.FirebaseApp app;
+    private Firebase.Auth.FirebaseUser user;
+    private bool isUserExist = false;
+    private bool isCheckedUserOnce = false;
     /// Login - Google config
     public string googleIdToken;
     public string googleAccessToken;
-    
+
+
+    private int coins;
+    private int cashCoins;
+    public string lastLogoutTime;
+    static string key_coins = "key_coins";
+    static string key_cashCoins = "key_cash";
+    static string key_logoutTime = "key_logoutTime";
+
 
     private static AppDataUtils _instance = null;
     public static AppDataUtils instance
     {
         get { return _instance ?? (_instance = AppDataUtils.Create()); }
-
     }
 
     public void Init()
@@ -80,24 +73,41 @@ public class AppDataUtils : MonoBehaviour
         //Initial itself with nothing
 
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
-            var dependencyStatus = task.Result;
-            if (dependencyStatus == Firebase.DependencyStatus.Available)
-            {
-                // Create and hold a reference to your FirebaseApp,
-                // where app is a Firebase.FirebaseApp property of your application class.
-                app = Firebase.FirebaseApp.DefaultInstance;
 
-                // Set a flag here to indicate whether Firebase is ready to use by your app.
-                Debug.Log("Firebase is ON now");
+            if (task.IsCompleted){
+                var dependencyStatus = task.Result;
+                if (dependencyStatus == Firebase.DependencyStatus.Available)
+                {
+                    // Create and hold a reference to your FirebaseApp,
+                    // where app is a Firebase.FirebaseApp property of your application class.
+                    app = Firebase.FirebaseApp.DefaultInstance;
 
-                //Init Authentication handler
-                auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+                    // Set a flag here to indicate whether Firebase is ready to use by your app.
+                    Debug.Log("Firebase is ON now");
+
+                    //Init Authentication handler
+                    auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+
+                    //Check
+                    CheckUserExist();
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError(System.String.Format(
+                      "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
+                    // Firebase Unity SDK is not safe to use here.
+
+                    //Do Call the method to end the Loading start Screen
+                    if (methodHolder != null)
+                    {
+                        methodHolder();
+                    }
+                }
             }
-            else
-            {
+
+            if (task.IsFaulted){
                 UnityEngine.Debug.LogError(System.String.Format(
-                  "Could not resolve all Firebase dependencies: {0}", dependencyStatus));
-                // Firebase Unity SDK is not safe to use here.
+                    " Firebase Init Exception : {0}", task.Exception));
             }
         });
     }
@@ -130,16 +140,14 @@ public class AppDataUtils : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Init_FireBase();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         //do check user
-        CheckUserExist();
-        //Show Error if need
-        PopErrorMessageBox();
+        
     }
 
     static public bool IsAOS()
@@ -174,230 +182,227 @@ public class AppDataUtils : MonoBehaviour
         return false;
     }
 
+    ///////  -------- Account --------- /////// 
 
-    public void LoginNormal(){LoginWith(loginType.login_registered); }
-    public void LoginRegister() { LoginWith(loginType.login_register); }
-    public void LoginGoogle() { LoginWith(loginType.login_google); }
-    public void LoginFacebook() { LoginWith(loginType.login_facebook); }
-    public void LoginApple() { LoginWith(loginType.login_apple); }
-    public void LoginGuest() { LoginWith(loginType.login_guest); }
-
-    private void LoginWith(loginType type)
-    {
-        curSelectedType = type;
-        switch (curSelectedType)
-        {
-            case loginType.login_register:
-                //Do Registeration flow
-                if (account_Id.text.Length == 0 || account_pwd.text.Length == 0)
-                {
-                    Debug.Log("Account ID/Password can not be empty !");
-                }
-                else {
-                    //Do auto fill and open another dialog for next step
-                    DoLoginProcess();
-                }
-                break;
-            case loginType.login_registered:
-                DoLoginProcess();
-                break;
-            case loginType.login_google:
-                //Call google Login flow
-                DoLoginProcess();
-                break;
-            case loginType.login_facebook:
-                //Call facebook Login flow
-                if (account_LoginRequest_panel != null) { account_LoginRequest_panel.SetActive(false); }
-                if (account_LoginAlready_panel != null) { account_LoginAlready_panel.SetActive(true); }
-                break;
-            case loginType.login_apple:
-                //Call apple Login flow
-                break;
-            case loginType.login_guest:
-                //Call apple Login flow
-                DoLoginProcess();
-                break;
-        }
-
-    }
-
-    
     private void CheckUserExist()
     {
-        if (auth != null) {
-            Firebase.Auth.FirebaseUser user = auth.CurrentUser;
-            bool userExist = false;
-            if (user != null)
+        if (auth != null && user == null && !isCheckedUserOnce)
+        {
+            Debug.Log("Firebase Auth Inst is on ! do CheckUserExist");
+            user = auth.CurrentUser;
+            if (auth.CurrentUser != null)
             {
-                Debug.Log("CheckUserExist -  user exist ! ");
+                Debug.Log("CheckUserExist -  user exist ! [" + user.ProviderId + "]");
                 //Set the latest login type
-                string id = user.ProviderId;
-                if (account_curID_text)
-                {
-                    account_curID_text.text = account_curID_text.text.ToString() + id;
-                }
-                userExist = true;
+
+                isUserExist = true;
+            }
+            else {
+                Debug.Log("CheckUserExist -  user not exist ! ");
             }
 
-            if (account_LoginRequest_panel != null) { account_LoginRequest_panel.SetActive(!userExist); }
-            if (account_LoginAlready_panel != null) { account_LoginAlready_panel.SetActive(userExist); }
+            isCheckedUserOnce = true;
+
+            //End the process , Call the delegate method to continue the loading process
+            if (methodHolder != null)
+            {
+                methodHolder();
+            }
+            else {
+                Debug.Log("methodHolder is in null! Please check");
+            }
+        }
+    }
+
+    public static Firebase.Auth.FirebaseAuth FirebaseAuthInst => auth;
+    public static Firebase.FirebaseApp FirebaseAppInst => app;
+    public Firebase.Auth.FirebaseUser LatestUserInfo => user;
+    public bool IsUserIDExisting()
+    {
+        return isUserExist;
+    }
+
+
+    ///////  -------- Local Data Store --------- /////// 
+
+    private bool IsKeyExisting(string in_key)
+    {
+        return PlayerPrefs.HasKey(in_key);
+    }
+    //----- get functions -----
+    /// <summary>
+    /// Get Integer Value 
+    /// </summary>
+    /// <param name="in_key"></param>
+    /// <returns></returns>
+    private int GetIntValByKey(string in_key)
+    {
+        if (in_key.Length != 0)
+        {
+            if (!IsKeyExisting(in_key))
+            {
+                //initial the value
+                SetIntValByKey(in_key, 0);
+            }
+            else
+            {
+                //Direct return the stored value
+                return PlayerPrefs.GetInt(in_key);
+            }
+        }
+        return 0;
+    }
+
+    /// <summary>
+    /// Get Float Value 
+    /// </summary>
+    /// <param name="in_key"></param>
+    /// <returns></returns>
+    private float GetFloatValByKey(string in_key)
+    {
+        if (in_key.Length != 0)
+        {
+            if (!IsKeyExisting(in_key))
+            {
+                //initial the value
+                SetFloatValByKey(in_key, 0f);
+            }
+            else
+            {
+                //Direct return the stored value
+                return PlayerPrefs.GetFloat(in_key);
+            }
+        }
+        return 0f;
+    }
+
+    /// <summary>
+    /// Get String Value 
+    /// </summary>
+    /// <param name="in_key"></param>
+    /// <returns></returns>
+    private string GetStringValByKey(string in_key)
+    {
+        if (in_key.Length != 0)
+        {
+            if (!IsKeyExisting(in_key))
+            {
+                //initial the value
+                SetStringValByKey(in_key, "");
+            }
+            else
+            {
+                //Direct return the stored value
+                return PlayerPrefs.GetString(in_key);
+            }
+        }
+        return "";
+    }
+
+    /// <summary>
+    /// Get total number of coins player is holding
+    /// </summary>
+    /// <returns>Current Player is holding number of game coins</returns>
+    public int GetCurPlayerCoins()
+    {
+        return coins = GetIntValByKey(key_coins);
+    }
+
+    /// <summary>
+    /// Get total number of cashCoins player is holding.
+    /// This coin is not genarated in the game. Only earl by parchasing system.
+    /// </summary>
+    /// <returns>Current Player is holding number of cash coins.</returns>
+    public int GetCurPlayerCashCoins()
+    {
+        return cashCoins = GetIntValByKey(key_cashCoins);
+    }
+
+    //----- set functions -----
+    /// <summary>
+    /// Set Integer Value 
+    /// </summary>
+    /// <param name="in_key"></param>
+    /// <param name="in_val"></param>
+    private void SetIntValByKey(string in_key, int in_val)
+    {
+        if (in_key.Length != 0)
+        {
+            PlayerPrefs.SetInt(in_key, in_val);
+        }
+    }
+
+    /// <summary>
+    /// Set Float Value 
+    /// </summary>
+    /// <param name="in_key"></param>
+    /// <param name="in_val"></param>
+    private void SetFloatValByKey(string in_key, float in_val)
+    {
+        if (in_key.Length != 0)
+        {
+            PlayerPrefs.SetFloat(in_key, in_val);
+        }
+    }
+    /// <summary>
+    /// Set String Value 
+    /// </summary>
+    /// <param name="in_key"></param>
+    /// <param name=stringal"></param>
+    private void SetStringValByKey(string in_key,string in_val)
+    {
+        if (in_key.Length != 0)
+        {
+            PlayerPrefs.SetString(in_key, in_val);
+        }
+    }
+
+    /// <summary>
+    /// Update Local Coin
+    /// </summary>
+    /// <param name="in_coin"></param>
+    public void UpdateLocalCoin(int in_coin)
+    {
+        //Should do server request for update the in_coin
+        if (in_coin >= 0 ) {
+            SetIntValByKey(key_coins, in_coin);
+        }
+    }
+
+    /// <summary>
+    /// Update Local Game Coin
+    /// </summary>
+    /// <param name="in_coin"></param>
+    public void UpdateLocalGameCoin(int in_coin)
+    {
+        //Should do server request for update the in_coin
+        if (in_coin >= 0)
+        {
+            SetIntValByKey(key_cashCoins, in_coin);
+        }
+    }
+
+
+    /////// -------- Scene handling --------- /////// 
+
+
+    public void SetAppLaunchCompletionBlock( FirebaseReadyDelegate in_method  )
+    {
+        if (in_method != null)
+        {
+            if (methodHolder != in_method)
+            {
+                methodHolder = in_method;
+
+                //Cyrus : Delegate set , then do start Initial Firebase process
+                Init_FireBase();
+            }
         }
         
     }
 
-    public void DoLogout()
+    public void LoadDashboardAfterloginSuccess()
     {
-        auth.SignOut();
-        CheckUserExist();
-    }
-
-    public void DoLoginProcess()
-    {
-        //Do show Loading
-        if (curSelectedType != latestSelectedType)
-        {
-            //do switching
-        }
-        else {
-
-        }
-
-        Firebase.Auth.FirebaseUser user = auth.CurrentUser;
-        if (user != null)
-        {
-            Debug.Log("DoLoginProcess - login ::  user not null ! ");
-            //Set the latest login type
-            latestSelectedType = curSelectedType;
-
-            LoadDashboardAfterloginSuccess();
-        }
-        else
-        {
-            Debug.Log(" user not exist ! ");
-            if (curSelectedType == loginType.login_google)
-            {
-                Debug.Log("DoLoginProcess - login_google ");
-                Firebase.Auth.Credential credential =
-    Firebase.Auth.GoogleAuthProvider.GetCredential(googleIdToken, googleAccessToken);
-                auth.SignInWithCredentialAsync(credential).ContinueWith(task =>
-                {
-                    if (task.IsCanceled)
-                    {
-                        Debug.LogError("SignInWithCredentialAsync was canceled.");
-                        return;
-                    }
-                    if (task.IsFaulted)
-                    {
-                        Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
-                        SetErrorMessageBox(task.Exception.ToString());
-                        return;
-                    }
-
-                    Firebase.Auth.FirebaseUser newUser = task.Result;
-                    Debug.LogFormat("User signed in successfully: {0} ({1})",
-                        newUser.DisplayName, newUser.UserId);
-
-                    //Set the latest login type
-                    latestSelectedType = curSelectedType;
-
-                    LoadDashboardAfterloginSuccess();
-                });
-
-            }
-            else if (curSelectedType == loginType.login_register)
-            {
-                Debug.Log("DoLoginProcess - login_register");
-                auth.SignInWithEmailAndPasswordAsync(account_Id.text, account_pwd.text).ContinueWith(task =>
-                {
-                    if (task.IsCanceled)
-                    {
-                        Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
-                        return;
-                    }
-                    if (task.IsFaulted)
-                    {
-                        Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
-                        SetErrorMessageBox(task.Exception.ToString());
-                        return;
-                    }
-
-                    Firebase.Auth.FirebaseUser newUser = task.Result;
-                    Debug.LogFormat("EmailReguester User signed in successfully: {0} ({1})",
-                        newUser.DisplayName, newUser.UserId);
-
-                    //Set the latest login type
-                    latestSelectedType = curSelectedType;
-
-                    LoadDashboardAfterloginSuccess();
-                });
-                    
-            }
-            else if (curSelectedType == loginType.login_guest)
-            {
-                Debug.Log("DoLoginProcess - login_guest");
-                auth.SignInAnonymouslyAsync().ContinueWith(task =>
-                {
-                    if (task.IsCanceled)
-                    {
-                        Debug.LogError("SignInAnonymouslyAsync was canceled.");
-                        return;
-                    }
-                    if (task.IsFaulted)
-                    {
-                        Debug.LogError("SignInAnonymouslyAsync encountered an error: " + task.Exception);
-                        SetErrorMessageBox(task.Exception.ToString());
-                        return;
-                    }
-
-                    Firebase.Auth.FirebaseUser newUser = task.Result;
-                    Debug.LogFormat("Guest User signed in successfully: {0} ({1})",
-                        newUser.DisplayName, newUser.UserId);
-
-                    //Set the latest login type
-                    latestSelectedType = curSelectedType;
-
-                    LoadDashboardAfterloginSuccess();
-                });
-            }
-        }
-
-        ////Cyrus : do simulate real connection
-        //yield return new WaitForSeconds(0.5f);
-    }
-
-    private void SetErrorMessageBox(string msg)
-    {
-        if (account_LoginError_panel != null)
-        {
-            Debug.Log("SetErrorMessageBox Msg set !  \n msg : " + msg);
-            account_LoginError_panel.SetActive(true);
-            txt_Contents.text = "" + msg;
-            needToShowErrorMsg = true;
-        }
-        else {
-            Debug.Log("SetErrorMessageBox no Msg set ! ");
-        }
-    }
-
-    private void PopErrorMessageBox()
-    {
-        if (account_LoginError_panel != null && txt_Contents != null)
-        {
-            if (!account_LoginError_panel.activeInHierarchy && txt_Contents.text.Length > 0 && needToShowErrorMsg)
-            {
-                account_LoginError_panel.SetActive(true);
-                needToShowErrorMsg = false;
-            }
-            else {
-
-            }
-        }
-    }
-
-    //Scene handling
-    void LoadDashboardAfterloginSuccess()
-    {
-        CheckUserExist();
         LoadDashboard();
     }
 
