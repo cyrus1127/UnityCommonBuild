@@ -3,3 +3,13 @@
 
 Project Introductions : 
  This is a common game unity project with basic plugin and functions. Its have Loading view to handle each view prepair and switch. A dashboard page is must , is a main view to show all menu and informations. Otherrides, In-App Purchase would not be missed.
+
+Included page/view : 
+- Login
+- registeration **
+- MainView ( Included side menu )
+- Shop
+- Advertising ( Unity Ad : reward , banner )
+
+Remark : 
+**  only guest login available
